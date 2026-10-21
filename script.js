@@ -1,48 +1,43 @@
-const orderButton = document.querySelector('#order');
-const cartCountSpan = document.querySelector('#cart-count');
-let cartCount = 0;
-//Кнопка <<Заказать  электронику>>
-orderButton.addEventListener('click', function() {
-alert('Спасибо за заказ! Мы свяжемся с вами.');
-});
-// Обрабатываем каждую карточку
-const cards = document.querySelectorAll('.card');
-cards.forEach(function(card) {
-const addButton = card.querySelector('.add');
-const counter  = card.querySelector('.counter');
-const minusButton = card.querySelector('.minus');
-const plusButton = card.querySelector('.plus');
-const qtySpan = card.querySelector('.qty');
-let qty =1; // количество для карточки
-// Нажали  <<В корзину>>
-addButton.addEventListener('click', function() {
-addButton.style.display = 'none';   // прячем кнопку
-counter.style.display = 'flex';  // показываем счётчик
-qty = 1;
-qtySpan.textContent = qty;
-cartCount = cartCount + 1;
-cartCountSpan.textContent = cartCount;
-});
-// Нажать <<+>>
-plusButton.addEventListener('click', function() {
-qty = qty + 1;
-qtySpan.textContent = qty;
-cartCount = cartCount + 1;
-cartCountSpan.textContent = cartCount;
-});
-// Нажали <<->>
-minusButton.addEventListener('click', function() {
-if (qty >1) {
-qty = qty -1;
-qtySpan.textContent = qty;
-cartCount = cartCount -1;
-cartCountSpan.textContent = cartCount;
-} else {
-// Если количество 0 - возвращаем кнопку <<В корзину>>
-addButton.style.display = 'inline-block';
-counter.style.display = 'none';
-cartCount = cartCount - 1;
-cartCountSpan.textContent = cartCount;
-     }  
-   });
-});
+// Эта функция вызывается при клике на кнопки + или -
+function changeQty(itemId, change) {
+    // Находим элемент с числом (например, qty-1)
+    const qtyElement = document.getElementById(itemId);
+    
+    // Получаем текущее число и прибавляем/отнимаем
+    let currentQty = parseInt(qtyElement.textContent);
+    let newQty = currentQty + change;
+    
+    // Защита: количество не может быть меньше 0
+    if (newQty < 0) {
+        newQty = 0;
+    }
+    
+    // Записываем новое значение на страницу
+    qtyElement.textContent = newQty;
+    
+    // Теперь пересчитываем ОБЩЕЕ количество товаров в корзине
+    updateTotalCart();
+    
+    // Анимация блока корзины в шапке
+    const cartBox = document.querySelector('.cart');
+    cartBox.style.transform = 'scale(1.1)';
+    setTimeout(() => {
+        cartBox.style.transform = 'scale(1)';
+    }, 200);
+}
+
+// Функция для подсчета общего количества товаров
+function updateTotalCart() {
+    let total = 0;
+    
+    // Находим все элементы с классом qty-value на странице
+    const allQuantities = document.querySelectorAll('.qty-value');
+    
+    // Проходимся по каждому и суммируем
+    allQuantities.forEach(function(element) {
+        total += parseInt(element.textContent);
+    });
+    
+    // Выводим общую сумму в шапку
+    document.getElementById('cart-count').textContent = total;
+}
